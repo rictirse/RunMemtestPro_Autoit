@@ -1,0 +1,164 @@
+#include <Misc.au3>
+#Region
+#AutoIt3Wrapper_icon=C:\no.ico
+#AutoIt3Wrapper_Compression=5
+#AutoIt3Wrapper_Res_Comment=RunMemTest
+#AutoIt3Wrapper_Res_Description=RunMemTest
+#AutoIt3Wrapper_Res_Fileversion=2.0.0.0
+#AutoIt3Wrapper_Res_LegalCopyright=噹噹
+#EndRegion
+
+_Singleton ("RunMemTest")
+
+AutoItSetOption ( "TrayIconHide", 1)
+Global $reg = "HKCU\Software\Dang\MenTest"
+Global $TitleName = RegRead ( $reg, "TitleName")
+
+Global $WindowsH, $WindowsW
+
+$WindowsW = RegRead ( $reg, "WindowsW")
+$WindowsH = RegRead ( $reg, "WindowsH")
+
+If Not StringIsDigit ($WindowsW) Then $WindowsW = @DesktopWidth
+If Not StringIsDigit ($WindowsH) Then $WindowsH = @DesktopHeight
+
+$FileName = @ScriptDir&"\memTestPro.exe"
+$Process = "memTestPro.exe"
+
+Global $MemCnt = RegRead ( $reg, "MemCnt")
+Global $MemSize = RegRead ( $reg, "MemSize")
+Global $slptime = RegRead ( $reg, "slptime")
+If $slptime = 0 Then;確定開啟的數量 如果不開啟補償 少開一個
+	$MemCnt -= 1
+EndIf
+Global $handle[1]
+
+For $i = 0 To $MemCnt
+	If Run ($FileName) = 0 Then
+		WinSetOnTop ( $TitleName, "", 0)
+		MsgBox ( 16, $TitleName,"找不到 "&$FileName)
+		WinSetOnTop ( $TitleName, "", 1)
+		Exit
+	EndIf
+Next
+
+_GetyMemTestListPid()
+$Radio = RegRead ( $reg, "Radio")
+
+For $i = 0 To $MemCnt
+	$pos = WinGetPos ($handle[$i])
+	If  $Radio = 2 Then
+			If $i = 0 Then
+				Dim $X = 0,$Y = 0
+				WinMove ($handle[$i],"", $X, $Y)
+				$X = $X+$pos[2]-110
+			Else
+				WinMove ($handle[$i],"", $X, $Y)
+				$X = $X+$pos[2]-110
+				If $WindowsW < $X+$pos[2]+10 Then
+					$X = 0
+					$Y = $Y+$pos[3]-148
+				EndIf
+			EndIf
+	ElseIf $Radio = 3 Then
+			If $i = 0 Then
+				Dim $X = 0,$Y = 0,$Z = 0
+				WinMove ($handle[$i],"", $X, $Y)
+				$X = $X+$pos[2]-110
+				$Y = $Y+$pos[3]-148
+			Else
+				WinMove ($handle[$i],"", $X, $Y)
+				If $Z = 1 Then
+					$X = $X-$pos[2]+110
+					$Y = $Y+$pos[3]-148
+				ElseIf $Z = 2 Then
+					$X = $X+$pos[2]-110
+					$Y = $Y-$pos[3]+148
+				ElseIf $Z = 3 Then
+					$X = $X-$pos[2]+110
+					$Y = $Y-$pos[3]+148
+				Else
+					$X = $X+$pos[2]-110
+					$Y = $Y+$pos[3]-148
+				EndIf
+				If $Y > ($WindowsH-$pos[3]) Then
+					If $Z = 0 Then
+						$X = $WindowsW-$pos[2]
+						$Y = 0
+						$Z = 1
+					Else
+						$X = 0
+						$Y = $WindowsH-$pos[3]-40
+						$Z = 2
+					EndIf
+				ElseIf $Y < 0 Then
+					$X = $WindowsW-$pos[2]
+					$Y = $WindowsH-$pos[3]-40
+					$Z = 3
+				EndIf
+			EndIf
+	ElseIf $Radio = 4 Then
+			If $i < RegRead ( $reg, "MemTestPos_array") Then
+				$Pos_X = RegRead ( $reg, "MemTestPos["&$i&"]_X")
+				$Pos_Y = RegRead ( $reg, "MemTestPos["&$i&"]_Y")
+				WinMove ($handle[$i],"", $Pos_X, $Pos_Y)
+			Else
+				WinMove ($handle[$i],"", 0, 0)
+			EndIf
+	Else;一般
+			If $i = 0 Then
+				Dim $X = 10,$Y = 10
+				WinMove ($handle[$i],"", $X, $Y)
+				$X = $X+$pos[2]+8
+			Else
+				WinMove ($handle[$i],"", $X, $Y)
+				$X = $X+$pos[2]+8
+				If $WindowsW < $X+$pos[2] Then
+					$X = 10
+					$Y = $Y+$pos[3]
+				EndIf
+			EndIf
+	EndIf
+Next
+
+Func _GetyMemTestListPid()
+	$var = WinList()
+	Local $j = 0
+	Do
+		$cnt = 0
+		$var = WinList()
+		For $i = 1 To $var[0][0]
+		If StringCompare ( $var[$i][0], "[0 errors] MemTest  ", 1) =  0 Then
+				$cnt += 1
+				sleep (50)
+			EndIf
+		Next
+;~ 		ToolTip ($cnt)
+	Until $cnt > $MemCnt
+
+	ReDim $handle[$cnt]
+
+	For $i = 1 To $var[0][0]
+		If StringCompare ( $var[$i][0], "[0 errors] MemTest  ",1) =  0 Then
+			$find = True
+		Else
+			$find = False
+		EndIf
+
+		If $find = True Then
+			$handle[$j] =$var[$i][1]
+			$j += 1
+		EndIf
+	Next
+
+	For $i = 0 To $j-1
+		If $slptime <> 0 And  $i = ($j - 1)Then;確定開啟的數量 如果不開啟補償 少開一個
+			WinSetTitle ( $handle[$i], "", "[0 errors] MemTest")
+			ControlSetText  ( $handle[$i], "", "Button5", "保留記憶體使用")
+		Else
+			ControlSetText  ( $handle[$i], "", "Button5", $i)
+		EndIf
+		ControlMove ( $handle[$i], "", "Button5", 9999, 9999)
+		ControlSetText  ( $handle[$i], "", "Edit1", $MemSize)
+	Next
+EndFunc

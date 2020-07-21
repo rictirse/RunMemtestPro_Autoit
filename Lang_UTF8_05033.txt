@@ -1,0 +1,72 @@
+﻿
+
+ElseIf @OSLang = 0411 Then;;日文版
+	Global $LangError = "エラー"
+	Global $LangPathError = "memTestProが見つからない"&@CRLF&"memTestProを同じファイルに置いてください。"
+
+	Global $LangMainSetting = "設定"
+	Global $LangMainMeter = "(メモリ X プロセス) = キャッシュ済み ; 利用可能　空きメモリ"
+	Global $LangAutoComputing = "自動計算"
+	Global $LangStartMemtest = "MemTest開始"
+	Global $LangStartBurning = "バーンインする"
+	Global $LangStopMemtest = "MemTest停止"
+	Global $LangHelp = "説明"
+	Global $LangListView = "合計|利用可能|起動時間|残り時間          "
+	Global $LangListViewUpdata = "合計|利用可能|起動時間|%d% 残り時間          "
+	Global $LangTotalRAM = "物理メモリ量"
+	Global $LangFreeRAM = "利用可能メモリ"
+
+	Global $LangBackgroundRun = "バックグラウンド"
+	Global $LangLayers = "順番調整"
+	Global $LangSetting = "オプション"
+	Global $LangCompensate = "補正時間（秒)"
+	Global $LangCompensateSec = "秒
+	Global $MemtestErrorPrtPCS = "エラー"
+	Global $LangSetMemtestPos = "ウインドウ設置"
+	Global $LangErrorPrt = "エラーショット"
+	Global $LangAutoPrt = "オートショット"
+	Global $LangEnablePrt = "起動"
+	Global $LangPrtSp = "分/枚"
+	Global $LangSavePath = "保存先"
+	Global $LangDisplayLimit = "スクリーン範囲"
+	Global $LangAutoSet = "オートセット"
+	Global $LangEndPrt = "完成ショット"
+	Global $LangEndClose = "プロセス終了"
+
+	Global $LangMeter = "監視"
+	Global $LangMemtestMeter = "#|使用メモリ| カバー範囲| エラー"
+	Global $LangCloseMemtest = "Memtest終了"
+	Global $LangClosememtestAndPrt = "  クロース +  プリントスクリーン  Memtest"
+	Global $LangFirstPos = "最初位置"
+	Global $LangLimitPos = "限界範囲"
+	Global $LangOffset = "間隔距離"
+	Global $LangDirection = "序列方向"
+	Global $LangTest = "開始"
+	Global $LangTestClose = "終了"
+	Global $LangArrangement = "序列方法"
+	Global $LangBasic = "普通"
+	Global $LangClose = "緊密"
+
+	Global $HelpTitle = "説明"
+	Global $HelpMsg = "1. 自動計算公式は ( スレッド数 / メモリ )"&@CRLF& _
+							"　3117MBを越えるとスレッド量を倍にする。"&@CRLF&@CRLF& _
+							"2. ショートカットキー："&@CRLF& _
+							"　　F5 → 自動計算"&@CRLF& _
+							"　　F6 → MemTest起動"&@CRLF& _
+							"　　F7 → バーンイン"&@CRLF& _
+							"　　F8 → MemTest全終了 "&@CRLF& _
+							"　　※ショートカットキーを愛用してください。※"&@CRLF&@CRLF& _
+							"3. バーンイン後 (残りメモリ) ＞ (キープメモリ) の場合、自動的に (メモリ補正)を行う，"&@CRLF& _
+							"　(メモリ補正) は残りメモリをキープメモリのMemに置きます，"&@CRLF& _
+							"　設定時間 0 の場合は起動しない。既定値は0秒，起動しない。"&@CRLF&@CRLF& _
+							"4. スクリーンショットの既定保存先はデスクトップ。"&@CRLF&@CRLF& _
+							"5. 完成ショット：バーンインにある数字を設置し(％)，数字を越えると自動的にショットする。"&@CRLF&@CRLF& _
+							"6. プロセス終了：プロセス完成ショットをクリアすると自動的にMemtestを終了する。"&@CRLF&@CRLF& _
+							"7. バックグラウンド：MemTestの起動を背景作業にする。"&@CRLF&@CRLF& _
+							""
+
+	Global $WaitArrangement = "120秒，或いはメモリ使用率が98%以下の場合，自動的に序列順番を変更"
+	Global $WaitArrangementString="%03d/120秒，或いはメモリ使用率が98%以下の場合，自動的に序列順番を変更"
+
+	Global $RunMemtestText = "\n　　　進度%s / %s，残り%s個\n\n　　MemTestを起動中，しばらくお待ちください . . .　　\n\n　"
+
